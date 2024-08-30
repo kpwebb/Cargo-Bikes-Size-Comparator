@@ -107,7 +107,7 @@
       <span class="loader" />
     </div>
     <canvas ref="bikes" width="1920" height="1920" class="_previewCanvas" />
-    <canvas ref="offscreen_canvas" width="1920" height="1920" style="display: none" />
+    <!-- <canvas ref="offscreen_canvas" width="1920" height="1920" style="display: none" /> -->
     <canvas ref="processor" width="1920" height="1920" style="display: none" />
   </div>
 </template>
@@ -211,17 +211,12 @@ export default {
       return full_path.url
     },
     async showBikes() {
-      const canvas = this.$refs.offscreen_canvas
-      if (!canvas) return
-
+      const canvas = document.createElement('canvas')
       canvas.width = Math.min(
-        canvas.parentNode.clientWidth * window.devicePixelRatio,
-        canvas.parentNode.clientHeight * window.devicePixelRatio * 1.5
+        this.$el.clientWidth * window.devicePixelRatio,
+        this.$el.clientHeight * window.devicePixelRatio * 1.5
       )
-      canvas.height = Math.min(
-        canvas.parentNode.clientHeight * window.devicePixelRatio,
-        canvas.width
-      )
+      canvas.height = Math.min(this.$el.clientHeight * window.devicePixelRatio, canvas.width)
 
       const ctx = canvas.getContext('2d')
 
@@ -308,6 +303,8 @@ export default {
       visible_canvas.width = canvas.width
       visible_canvas.height = canvas.height
       visible_canvas.getContext('2d').drawImage(canvas, 0, 0, canvas.width, canvas.height)
+
+      canvas.remove()
     },
     drawBackground(ctx, canvas) {
       ctx.globalCompositeOperation = 'source-over'
@@ -343,7 +340,7 @@ export default {
         ctx.lineTo(x, canvas.height)
         ctx.stroke()
 
-        const font_size = (canvas.parentNode.clientHeight / 80) * window.devicePixelRatio * 1
+        const font_size = (this.$el.clientHeight / 80) * window.devicePixelRatio * 1
         ctx.font = `${font_size}px Inter`
 
         if (cm_count === 0) ctx.fillStyle = text_0_fill_color
